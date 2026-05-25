@@ -5,11 +5,12 @@ const { WebhookClient } = require("dialogflow-fulfillment");
 const https = require("https");
 const app = express();
 app.use(express.json());
+
 app.get("/", (req, res) => {
   res.send("Jim Bro is live!");
 });
 
-// Helper function to make API calls to the website Wger
+// Helper function to make API calls to Wger
 function fetchFromWger(path) {
   return new Promise((resolve, reject) => {
     const options = {
@@ -77,7 +78,12 @@ function normalizeGroup(raw) {
   return aliases[lower] || lower;
 }
 
-// static muscle group info
+function getParam(parameters, name) {
+  const val = parameters[name];
+  return Array.isArray(val) ? val[0] : val;
+}
+
+// Static muscle group info
 const muscleInfo = {
   biceps:
     "Your biceps are on the front of your upper arm and are responsible for bending your elbow and rotating your forearm. Training them builds arm strength and size.",
@@ -106,7 +112,7 @@ const muscleInfo = {
   arms: "Your arms include your biceps and triceps. Training both ensures balanced arm development and strength for pushing and pulling movements.",
 };
 
-// static injury prevention tips
+// Static injury prevention tips
 const injuryTips = {
   biceps:
     "Warm up with light curls first, avoid swinging the weight, and do not curl with a fully supinated grip under heavy load.",
@@ -135,7 +141,7 @@ const injuryTips = {
   arms: "Warm up your elbows and shoulders, use controlled movements, and avoid going too heavy too soon.",
 };
 
-// static cool down stretches fallback, if api is unsuccessful
+// Static cool down stretches fallback
 const coolDownStretches = {
   biceps:
     "cross body arm stretch, doorway bicep stretch, and overhead tricep stretch",
@@ -176,7 +182,7 @@ app.post("/webhook", async (request, response) => {
   }
 
   async function getWorkout(agent) {
-    const raw = agent.parameters.MuscleGroup;
+    const raw = getParam(agent.parameters, "MuscleGroup");
     const muscleGroup = normalizeGroup(raw);
 
     if (!muscleGroup) {
@@ -239,11 +245,10 @@ app.post("/webhook", async (request, response) => {
   }
 
   async function getSetsAndReps(agent) {
-    const raw = agent.parameters.MuscleGroup;
+    const raw = getParam(agent.parameters, "MuscleGroup");
     const muscleGroup = normalizeGroup(raw);
-    const fitnessGoal = (agent.parameters.FitnessGoal || "build muscle")
-      .toLowerCase()
-      .trim();
+    const fitnessGoalRaw = getParam(agent.parameters, "FitnessGoal");
+    const fitnessGoal = (fitnessGoalRaw || "build muscle").toLowerCase().trim();
 
     if (!muscleGroup) {
       agent.add(
@@ -279,7 +284,7 @@ app.post("/webhook", async (request, response) => {
   }
 
   function getMuscleGroupInfo(agent) {
-    const raw = agent.parameters.MuscleGroup;
+    const raw = getParam(agent.parameters, "MuscleGroup");
     const muscleGroup = normalizeGroup(raw);
 
     if (!muscleGroup) {
@@ -302,7 +307,7 @@ app.post("/webhook", async (request, response) => {
   }
 
   function getInjuryPrevention(agent) {
-    const raw = agent.parameters.MuscleGroup;
+    const raw = getParam(agent.parameters, "MuscleGroup");
     const muscleGroup = normalizeGroup(raw);
 
     if (!muscleGroup) {
@@ -327,7 +332,7 @@ app.post("/webhook", async (request, response) => {
   }
 
   async function getCoolDown(agent) {
-    const raw = agent.parameters.MuscleGroup;
+    const raw = getParam(agent.parameters, "MuscleGroup");
     const muscleGroup = normalizeGroup(raw);
 
     if (!muscleGroup) {
