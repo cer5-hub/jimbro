@@ -201,15 +201,51 @@ app.post("/webhook", async (request, response) => {
       return;
     }
 
+    // Static fallback exercises
+    const staticExercises = {
+      biceps: ["barbell curls", "hammer curls", "incline dumbbell curls"],
+      triceps: [
+        "skull crushers",
+        "tricep pushdowns",
+        "overhead tricep extensions",
+      ],
+      shoulders: ["overhead press", "lateral raises", "front raises"],
+      chest: ["bench press", "incline dumbbell press", "cable flyes"],
+      back: ["pull-ups", "bent over rows", "single arm dumbbell rows"],
+      lats: ["lat pulldowns", "straight arm pulldowns", "wide grip pull-ups"],
+      traps: ["barbell shrugs", "face pulls", "upright rows"],
+      rhomboids: ["seated cable rows", "face pulls", "rear delt flyes"],
+      abs: ["planks", "cable crunches", "hanging leg raises"],
+      glutes: ["hip thrusts", "Romanian deadlifts", "Bulgarian split squats"],
+      quads: ["leg press", "leg extensions", "goblet squats"],
+      hamstrings: ["leg curls", "Romanian deadlifts", "Nordic curls"],
+      calves: [
+        "standing calf raises",
+        "seated calf raises",
+        "calf press on the leg press",
+      ],
+      legs: ["leg press", "Romanian deadlifts", "walking lunges"],
+      arms: ["barbell curls", "skull crushers", "hammer curls"],
+    };
+
     try {
       const data = await fetchFromWger(
         `/api/v2/exercise/?format=json&language=2&muscles=${muscleId}&limit=5`
       );
 
       if (!data.results || data.results.length === 0) {
-        agent.add(
-          `I couldn't find exercises for ${muscleGroup} right now. Try again in a moment!`
-        );
+        const fallback = staticExercises[muscleGroup];
+        if (fallback) {
+          agent.add(
+            `Let's get it! For ${muscleGroup}, you're gonna want to try ${fallback.join(
+              ", "
+            )}. Solid choices. Need any substitutions, or you wanna know how many sets to knock out?`
+          );
+        } else {
+          agent.add(
+            `I couldn't find exercises for ${muscleGroup} right now. Try again in a moment!`
+          );
+        }
         return;
       }
 
@@ -225,9 +261,18 @@ app.post("/webhook", async (request, response) => {
         .slice(0, 3);
 
       if (exerciseNames.length === 0) {
-        agent.add(
-          `I found some ${muscleGroup} exercises but had trouble reading them. Try asking again!`
-        );
+        const fallback = staticExercises[muscleGroup];
+        if (fallback) {
+          agent.add(
+            `Let's get it! For ${muscleGroup}, you're gonna want to try ${fallback.join(
+              ", "
+            )}. Solid choices. Need any substitutions, or you wanna know how many sets to knock out?`
+          );
+        } else {
+          agent.add(
+            `I found some ${muscleGroup} exercises but had trouble reading them. Try asking again!`
+          );
+        }
         return;
       }
 
@@ -238,9 +283,18 @@ app.post("/webhook", async (request, response) => {
       );
     } catch (error) {
       console.error("Wger API error:", error);
-      agent.add(
-        `I had trouble pulling exercises right now. Try again in a second!`
-      );
+      const fallback = staticExercises[muscleGroup];
+      if (fallback) {
+        agent.add(
+          `Let's get it! For ${muscleGroup}, you're gonna want to try ${fallback.join(
+            ", "
+          )}. Solid choices. Need any substitutions, or you wanna know how many sets to knock out?`
+        );
+      } else {
+        agent.add(
+          `I had trouble pulling exercises right now. Try again in a second!`
+        );
+      }
     }
   }
 
