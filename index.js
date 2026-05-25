@@ -5,6 +5,9 @@ const { WebhookClient } = require("dialogflow-fulfillment");
 const https = require("https");
 const app = express();
 app.use(express.json());
+app.get("/", (req, res) => {
+  res.send("Jim Bro is live!");
+});
 
 // Helper function to make API calls to the website Wger
 function fetchFromWger(path) {
