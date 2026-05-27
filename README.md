@@ -53,6 +53,8 @@ node index.js
 
 Server will run on `http://localhost:10000`
 
+**Live fulfillment endpoint:** `https://jimbro-1.onrender.com/webhook`
+
 To connect to Dialogflow, expose your local server using a tool like 
 [ngrok](https://ngrok.com/) and update the webhook URL in the 
 Dialogflow Fulfillment settings.
@@ -77,13 +79,6 @@ Also understands gym slang: `hammies` → hamstrings, `delts` → shoulders,
 Portland State University  
 [LinkedIn](https://linkedin.com/in/cervantes-erika) · [GitHub](https://github.com/cer5-hub)
 
-Fulfillment is hosted on Render at: https://jimbro-1.onrender.com/webhook
-
-To run locally:
-
-1. npm install 
-2. node index.js
 
 
-Dialogflow webhook URL must be set to the Render URL above. 
-Web Demo: https://bot.dialogflow.com/a801990b-cc09-4ef2-8f25-c6487db4f82d
+
